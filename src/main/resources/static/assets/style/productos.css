@@ -14,10 +14,6 @@
   justify-content: center;
   background-color: transparent;
 }
-p{
-  font-size: 17px !important;
-
-}
 .container-loader {
   width: 100%;
   height: 100%;
@@ -63,6 +59,25 @@ p{
 nav {
   min-height: 6rem;
   flex-grow: 1 !important;
+}
+.botonVer{
+
+  padding: 10px 20px;
+  font-size: 16px;
+  background: none;
+  border-style: none;
+  border: 1px solid rgb(5, 5, 5);
+  color: rgb(12, 12, 12);
+  margin-top: 20px;
+  transition: background 300ms;
+  cursor: pointer;
+  margin-left: 10px;
+
+}
+.botonVer:hover{
+  background: rgb(2, 2, 2);
+  color: rgb(248, 247, 247);
+
 }
 .navbar-default {
   background: rgba(50, 50, 50, 0);
@@ -153,6 +168,19 @@ nav {
   color: rgb(26, 182, 26) !important;
   text-decoration: underline;
 }
+.montoTotal {
+  position: sticky;
+  width: 10rem;
+  left: 90% !important;
+  top: 80% !important;
+  background-color: #ffffffd2;
+  border: 2px solid black;
+  box-shadow: 4px 4px #32323285;
+  z-index: 1 !important;
+}
+.montoTotal> p{
+  font-size: 16px !important;
+}
 
 .container {
   width: 100%;
@@ -176,14 +204,8 @@ ul {
   border-bottom: transparent 2px solid;
   font-stretch: condensed !important;
 }
-.a-nombre {
-  vertical-align: middle !important;
-}
-.bi-box-arrow-left {
-  font-size: 22px !important;
-  font-weight: 800;
-  padding: 0;
-  margin: 0;
+.emoji-arg {
+  width: 45px;
 }
 
 .icons-navbar {
@@ -198,7 +220,8 @@ main {
   min-height: 85vh !important;
   background-color: rgb(240, 240, 240);
 }
-main > h6 {
+main > h6,
+p, ul, li{
   font-family: "Ubuntu", sans-serif;
   font-size: 24px;
 }
@@ -239,8 +262,8 @@ h5 {
   --bg-color: #ffffff;
   --main-color: #323232;
   --main-focus: #2d8cf0;
-  width: 230px;
-  height: 350px;
+  width: 21rem;
+  height: 32rem;
   background: var(--bg-color);
   border: 2px solid var(--main-color);
   box-shadow: 4px 4px var(--main-color);
@@ -258,9 +281,9 @@ h5 {
   --bg-color: #fff;
   --main-color: #323232;
   --main-focus: #2d8cf0;
-  width: 230px;
+  width: 20rem;
   position: relative;
-  height: 350px;
+  min-height: 26rem;
   background: var(--bg-color);
   border: 2px solid var(--main-color);
   box-shadow: 4px 4px var(--main-color);
@@ -271,14 +294,14 @@ h5 {
   padding: 20px;
   gap: 10px;
 }
-.card:hover{
+.card:hover, .card2:hover{
   transform: scale(1.05);
 }
 
 .card-img {
   transition: all 0.5s;
-  background-color: #fff;
-  height: 10rem;
+  background-color: inherit;
+  height: 17rem;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -290,7 +313,7 @@ h5 {
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  height: 100%;
+  height: 17rem;
   object-fit: contain;
   /* background-image: linear-gradient(to top,transparent 10px,rgba(0,0,0,0.3) 10px,rgba(0,0,0,0.3) 13px,transparent 13px); */
 }
@@ -313,46 +336,32 @@ h5 {
 .card-footer {
   display: flex;
   position: absolute;
-  bottom: 0.5rem;
-  left: 0.5rem;
-  right: 0.5rem;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
   flex-direction: row;
   align-items: end;
   justify-content: space-between;
 }
 
-.btn-info {
-  width: 30px !important;
-  height: 30px;
-  color: white !important;
-  text-align: center !important;
-  padding: 0;
-}
-
-.btn-info > i {
-  font-size: 20px !important;
-  padding: 0;
-  vertical-align: middle !important;
-  margin-bottom: 2px;
-}
-
 .card-price {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 500;
   color: var(--font-color);
 }
 
 .card-price span {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 500;
   color: var(--font-color-sub);
 }
 
 .card-btn {
-  height: 30px;
-  width: 30px;
+  height: 35px;
   background: var(--bg-color);
+  border: 2px solid var(--main-color);
   border-radius: 5px;
+  padding: 0 15px;
   transition: all 0.3s;
 }
 
@@ -392,7 +401,7 @@ h5 {
 footer {
   background-color: rgb(116, 63, 146);
   object-fit: cover;
-  min-height: 25rem;
+  min-height: 40rem;
 }
 footer > h1 {
   font-size: 60px;
@@ -480,24 +489,6 @@ footer > h1 {
   }
 }
 
-.form-check-input {
-  border: 1px solid black;
-}
-
-.montoTotal {
-  position: sticky;
-  width: 10rem;
-  left: 90% !important;
-  top: 80% !important;
-  background-color: #ffffffd2;
-  border: 2px solid black;
-  box-shadow: 4px 4px #32323285;
-  z-index: 1 !important;
-}
-.montoTotal > p {
-  font-size: 16px !important;
-}
-
 @media screen and (min-width: 320px) and (max-width: 768px) {
   .categoria-tabaco {
     background-position: center;
@@ -530,38 +521,12 @@ footer > h1 {
   .recomendadosResponsive {
     padding: 1rem !important;
   }
-  footer {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-
-  .iframe-footer {
-    width: 250px;
-    height: 150px;
-  }
 }
-@media screen and (min-width: 769px) and (max-width: 1024px) {
+@media screen and (min-width: 769px) and (max-width: 1250px) {
   .recomendados {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding-top: 2rem;
-  }
-  .recomendadosResponsive {
-    display: flex !important;
-    justify-content: center !important;
-  }
-}
-
-@media only screen and (min-width: 768px) and (max-width: 880px) {
-  .filtros {
-    flex-direction: column !important;
-  }
-}
-
-@media only screen and (min-width: 768px) and (max-width: 1320px) {
-  footer {
-    display: flex !important;
-    flex-direction: column !important;
   }
 }

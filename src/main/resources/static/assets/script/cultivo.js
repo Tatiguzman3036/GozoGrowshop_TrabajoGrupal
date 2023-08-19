@@ -37,9 +37,10 @@ createApp({
       logged: false,
       cliente: [],
       cantidadProductosCarrito: this.getCantidadProductosCarrito(),
-      format: [],
-      totalPrecioProductos: this.getMontoTotalProductos(),
-
+      cantidadEscogida: 1,
+        descripcionMaxLength : 50,
+        descripcionCompleta: false,
+        totalPrecioProductos: 0,
     };
   },
   created() {
@@ -50,12 +51,13 @@ createApp({
 
       })
       .catch(err => console.log(err))
+      this.format = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      });
     this.traerProductosCultivo();
     this.seleccionadas = JSON.parse(localStorage.getItem("seleccionadas")) ?? [];
-    this.format = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    });
+  this.totalPrecioProductos = parseFloat(localStorage.getItem("totalPrecioProductos")) || 0;
   },
   methods: {
     logout() {
@@ -64,11 +66,6 @@ createApp({
 
           window.location.href = "/index.html";
         })
-    },
-    mostrarModal(producto) {
-      if (producto) {
-        this.productoSeleccionado = producto;
-      }
     },
     traerProductosCultivo() {
       axios
@@ -121,10 +118,7 @@ createApp({
               });
             }
             this.cantidadProductosCarrito += cantidad;
-            this.totalPrecioProductos = this.seleccionadas.reduce((total, producto) => {
-              return total + producto.precio * producto.cantidad;
-            }, 0);
-            localStorage.setItem("totalPrecioProductos", this.totalPrecioProductos);
+            this.calcularTotalPrecioProductos();
             const jsonProductos = JSON.stringify(this.cantidadProductosCarrito)
             localStorage.setItem("cantidadProductosCarrito", jsonProductos);
 
@@ -132,26 +126,10 @@ createApp({
             localStorage.setItem("seleccionadas", json);
             swal("Success", "Producto agregado al carrito", "success");
           } else {
-            swal("Error", "Cantidad inválida", "error");
+            swal("Error", "Cantidad invÃ¡lida", "error");
           }
         }
       });
-    },
-
-    // Verificar si hay productos en el carrito
-    getCantidadProductosCarrito() {
-      const storedCantidadProductosCarrito = localStorage.getItem("cantidadProductosCarrito");
-      if (storedCantidadProductosCarrito) {
-        return parseInt(storedCantidadProductosCarrito);
-      }
-      return 0; // Valor predeterminado si no se encuentra en el LocalStorage
-    },
-    getMontoTotalProductos() {
-      const storedMontoTotalProductos = localStorage.getItem("totalPrecioProductos");
-      if (storedMontoTotalProductos) {
-        return storedMontoTotalProductos;
-      }
-      return 0; // Valor predeterminado si no se encuentra en el LocalStorage
     },
     comprarEnElModal(id) {
       const producto = this.productos.find((e) => e.id == id);
@@ -167,10 +145,53 @@ createApp({
             cantidad,
           });
         }
+
+        this.cantidadProductosCarrito += cantidad;
+        this.calcularTotalPrecioProductos();
+        const jsonProductos = JSON.stringify(this.cantidadProductosCarrito);
+        localStorage.setItem("cantidadProductosCarrito", jsonProductos);
+
+        const json = JSON.stringify(this.seleccionadas);
+        localStorage.setItem("seleccionadas", json);
+
+        swal("Success", "Producto agregado al carrito", "success");
+      } else {
+        swal("Error", "Cantidad inválida", "error");
       }
-
-
     },
+
+    // Verificar si hay productos en el carrito
+    getCantidadProductosCarrito() {
+      const storedCantidadProductosCarrito = localStorage.getItem("cantidadProductosCarrito");
+      if (storedCantidadProductosCarrito) {
+        return parseInt(storedCantidadProductosCarrito);
+      }
+      return 0; // Valor predeterminado si no se encuentra en el LocalStorage
+    },
+    calcularTotalPrecioProductos() {
+      this.totalPrecioProductos = this.seleccionadas.reduce((total, producto) => {
+        return total + producto.precio * producto.cantidad;
+      }, 0);
+  
+      // Guardar el precio total en el localStorage
+      localStorage.setItem("totalPrecioProductos", this.totalPrecioProductos);
+    },
+    mostrarModal(producto) {
+      if (producto) {
+        this.productoSeleccionado = producto;
+      }
+    },
+    toggleDescripcion() {
+      if (this.descripcionMaxLength === 50) {
+        this.descripcionMaxLength = this.productoSeleccionado.descripcion.length;
+      } else {
+        this.descripcionMaxLength = 50;
+      }
+    },
+    toggleDescripcionCompleta() {
+      this.descripcionCompleta = !this.descripcionCompleta;
+    },
+
   },
   computed: {
     filtroBusquedaCultivo() {
@@ -181,11 +202,20 @@ createApp({
         this.filtroCultivo = this.cultivo;
       }
     },
+    descripcionReducida() {
+      if (this.productoSeleccionado && this.productoSeleccionado.descripcion) {
+        if (this.descripcionCompleta) {
+          return this.productoSeleccionado.descripcion;
+        } else {
+          if (this.productoSeleccionado.descripcion.length > this.descripcionMaxLength) {
+            let producto = this.productoSeleccionado.descripcion.slice(0, this.descripcionMaxLength) + "...";
+            return producto;
+          } else {
+            return this.productoSeleccionado.descripcion;
+          }
+        }
+      }
+      return '';
+    },
   }
-}
-).mount("#app")
-
-
-
-
-
+}).mount("#app")

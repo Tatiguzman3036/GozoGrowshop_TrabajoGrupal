@@ -47,7 +47,7 @@ createApp({
         descripcionMaxLength : 50,
         descripcionCompleta: false,
         totalPrecioProductos: 0,
-
+      
       productoSeleccionado: {},
       totalPrecioProductos: 0,
 
@@ -180,7 +180,7 @@ createApp({
       this.totalPrecioProductos = this.seleccionadas.reduce((total, producto) => {
         return total + producto.precio * producto.cantidad;
       }, 0);
-
+  
       // Guardar el precio total en el localStorage
       localStorage.setItem("totalPrecioProductos", this.totalPrecioProductos);
     },
