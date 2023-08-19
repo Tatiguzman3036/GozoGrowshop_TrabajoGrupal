@@ -43,17 +43,19 @@ createApp({
 
       categoriasAccesorios: [],
 
+        cantidadEscogida: 1,
+        descripcionMaxLength : 50,
+        descripcionCompleta: false,
+        totalPrecioProductos: 0,
+
       productoSeleccionado: {},
+      totalPrecioProductos: 0,
 
       cantidadProductosCarrito: this.getCantidadProductosCarrito(),
 
       logged: false,
 
-      totalPrecioProductos: this.getMontoTotalProductos(),
-
-      cliente: [],
-
-      format: []
+      cliente: []
     };
   },
   created() {
@@ -66,27 +68,19 @@ createApp({
       .catch(err => console.log(err))
     this.traerProductosAccesorios();
     this.seleccionadas = JSON.parse(localStorage.getItem("seleccionadas")) ?? [];
-    this.format = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    });
-    this.getMontoTotalProductos();
+    this.totalPrecioProductos = parseFloat(localStorage.getItem("totalPrecioProductos")) || 0;
   },
   methods: {
-    logout() {
-      axios.post("/api/logout")
-        .then(response => {
-          this.deleteCompras();
-          window.location.href = "/index.html";
-        })
-    },
     traerProductosAccesorios() {
       axios
         .get('/api/productos')
         .then(response => {
           this.productos = response.data.filter(productos => productos.activo == true)
 
-
+          this.format = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          });
 
           //ACCESORIOS
           this.accesorios = this.productos.filter(producto => producto.categoria == "ACCESORIOS");
@@ -133,49 +127,19 @@ createApp({
               });
             }
             this.cantidadProductosCarrito += cantidad;
-            this.totalPrecioProductos = this.seleccionadas.reduce((total, producto) => {
-              return total + producto.precio * producto.cantidad;
-            }, 0);
-            localStorage.setItem("totalPrecioProductos", this.totalPrecioProductos);
+            this.calcularTotalPrecioProductos();
             const jsonProductos = JSON.stringify(this.cantidadProductosCarrito)
             localStorage.setItem("cantidadProductosCarrito", jsonProductos);
 
             const json = JSON.stringify(this.seleccionadas);
             localStorage.setItem("seleccionadas", json);
-            swal("Success", "Producto agregado al carrito", "success");
+            swal( "Producto agregado al carrito", "success");
           } else {
             swal("Error", "Cantidad inválida", "error");
           }
         }
       });
     },
-    // Verificar si hay productos en el carrito
-    getCantidadProductosCarrito() {
-      const storedCantidadProductosCarrito = localStorage.getItem("cantidadProductosCarrito");
-      if (storedCantidadProductosCarrito) {
-        return parseInt(storedCantidadProductosCarrito);
-      }
-      return 0; // Valor predeterminado si no se encuentra en el LocalStorage
-    },
-    mostrarModal(producto) {
-      if (producto) {
-        this.productoSeleccionado = producto;
-      }
-    },
-
-    deleteCompras() {
-      localStorage.clear();
-      this.seleccionadas = [];
-    },
-
-    getMontoTotalProductos() {
-      const storedMontoTotalProductos = localStorage.getItem("totalPrecioProductos");
-      if (storedMontoTotalProductos) {
-        return storedMontoTotalProductos;
-      }
-      return 0; // Valor predeterminado si no se encuentra en el LocalStorage
-    },
-
     comprarEnElModal(id) {
       const producto = this.productos.find((e) => e.id == id);
       const cantidad = parseInt(this.cantidadEscogida);
@@ -190,11 +154,51 @@ createApp({
             cantidad,
           });
         }
+
+        this.cantidadProductosCarrito += cantidad;
+        this.calcularTotalPrecioProductos();
+        const jsonProductos = JSON.stringify(this.cantidadProductosCarrito);
+        localStorage.setItem("cantidadProductosCarrito", jsonProductos);
+
+        const json = JSON.stringify(this.seleccionadas);
+        localStorage.setItem("seleccionadas", json);
+
+        swal("Success", "Producto agregado al carrito", "success");
+      } else {
+        swal("Error", "Cantidad inválida", "error");
       }
-
-
     },
+    // Verificar si hay productos en el carrito
+    getCantidadProductosCarrito() {
+      const storedCantidadProductosCarrito = localStorage.getItem("cantidadProductosCarrito");
+      if (storedCantidadProductosCarrito) {
+        return parseInt(storedCantidadProductosCarrito);
+      }
+      return 0; // Valor predeterminado si no se encuentra en el LocalStorage
+    },
+    calcularTotalPrecioProductos() {
+      this.totalPrecioProductos = this.seleccionadas.reduce((total, producto) => {
+        return total + producto.precio * producto.cantidad;
+      }, 0);
 
+      // Guardar el precio total en el localStorage
+      localStorage.setItem("totalPrecioProductos", this.totalPrecioProductos);
+    },
+    mostrarModal(producto) {
+      if (producto) {
+        this.productoSeleccionado = producto;
+      }
+    },
+    toggleDescripcion() {
+      if (this.descripcionMaxLength === 50) {
+        this.descripcionMaxLength = this.productoSeleccionado.descripcion.length;
+      } else {
+        this.descripcionMaxLength = 50;
+      }
+    },
+    toggleDescripcionCompleta() {
+      this.descripcionCompleta = !this.descripcionCompleta;
+    },
   },
   computed: {
     filtroBusquedaAccesorios() {
@@ -205,5 +209,20 @@ createApp({
         this.filtroAccesorios = this.accesorios;
       }
     },
-  }
+    descripcionReducida() {
+      if (this.productoSeleccionado && this.productoSeleccionado.descripcion) {
+        if (this.descripcionCompleta) {
+          return this.productoSeleccionado.descripcion;
+        } else {
+          if (this.productoSeleccionado.descripcion.length > this.descripcionMaxLength) {
+            let producto = this.productoSeleccionado.descripcion.slice(0, this.descripcionMaxLength) + "...";
+            return producto;
+          } else {
+            return this.productoSeleccionado.descripcion;
+          }
+        }
+      }
+      return '';
+    },
+}
 }).mount("#app")
